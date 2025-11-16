@@ -39,7 +39,7 @@ def move_player(game_state, direction):
     current_room = game_state['current_room']
     room_data = ROOMS.get(current_room, {})
     exits = room_data.get('exits', {})
-    
+
     # Проверяем, существует ли выход в этом направлении
     if direction in exits:
         next_room = exits[direction]
@@ -48,10 +48,14 @@ def move_player(game_state, direction):
         if next_room == 'treasure_room':
             inventory = game_state.get('player_inventory', [])
             if 'rusty_key' not in inventory:
-                print("🚪 Дверь заперта. Нужен ключ, чтобы пройти дальше.")
+                print("Дверь заперта. Нужен ключ, чтобы пройти дальше.")
                 return False
             else:
-                print("🗝️ Вы используете найденный ключ, чтобы открыть путь в комнату сокровищ.")
+                print(
+                """
+                Вы используете найденный ключ,
+                чтобы открыть путь в комнату сокровищ.
+                """)
         
         # Обновляем текущую комнату
         game_state['current_room'] = next_room

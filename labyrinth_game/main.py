@@ -13,7 +13,6 @@ from .utils import (
     is_valid_direction,
     parse_command,
     show_help,
-    translate_direction,
 )
 
 
@@ -26,59 +25,59 @@ def process_command(game_state, user_input):
     
     # Используем match/case для определения команды
     match command:
-        case 'осмотреть' | 'look' | 'осмотреться':
+        case 'look':
             describe_current_room(game_state)
         
-        case 'идти' | 'go' | 'move' | 'walk':
+        case 'go':
             if not argument:
-                print("Укажите направление: идти [север/юг/восток/запад]")
+                print("Укажите направление: идти [north/south/east/west]")
                 return
             
-            direction = translate_direction(argument)
+            direction = argument
             if not is_valid_direction(direction):
-                print("Неверное направление. Используйте: север, юг, восток, запад")
+                print("Неверное направление. Используйте: north/south/east/west)")
                 return
             
             move_player(game_state, direction)
         
         # Обработка односложных команд направления
-        case 'север' | 'north' | 'юг' | 'south' | 'восток' | 'east' | 'запад' | 'west':
-            direction = translate_direction(command)
+        case 'north' | 'south' | 'east' | 'west':
+            direction = command
             move_player(game_state, direction)
         
-        case 'взять' | 'take' | 'pick':
+        case 'take':
             if not argument:
                 print("Укажите предмет: взять [название предмета]")
                 return
             
             take_item(game_state, argument)
         
-        case 'использовать' | 'use' | 'применить':
+        case 'use':
             if not argument:
                 print("Укажите предмет: использовать [название предмета]")
                 return
             
             use_item(game_state, argument)
         
-        case 'решить' | 'solve' | 'ответить':
+        case 'solve':
             # Если в комнате с сокровищами, пытаемся открыть сундук
             if game_state['current_room'] == 'treasure_room':
                 attempt_open_treasure(game_state)
             else:
                 solve_puzzle(game_state)
         
-        case 'инвентарь' | 'inventory' | 'items':
+        case 'inventory':
             show_inventory(game_state)
         
-        case 'выход' | 'quit' | 'exit':
+        case 'quit' | 'exit':
             print("Спасибо за игру! До свидания!")
             game_state['game_over'] = True
         
-        case 'помощь' | 'help' | 'команды':
+        case 'help':
             show_help()
         
         case _:
-            print("Неизвестная команда. Введите 'помощь' для списка команд.")
+            print("Неизвестная команда. Введите 'help' для списка команд.")
 
 
 def main():
