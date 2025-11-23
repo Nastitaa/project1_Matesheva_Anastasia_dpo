@@ -1,7 +1,7 @@
 # Вспомогательные функции
 import math
 
-from .constants import COMMANDS, MESSAGES, PUZZLES, ROOMS
+from .constants import COMMANDS, COMMANDS_HELP, MESSAGES, PUZZLES, ROOMS
 
 
 def pseudo_random(seed, modulo):
@@ -25,7 +25,7 @@ def trigger_trap(game_state):
     """
     Активирует ловушку с негативными последствиями для игрока
     """
-    print("💥 Ловушка активирована! Пол стал дрожать...")
+    print("Ловушка активирована! Пол стал дрожать...")
     
     inventory = game_state.get('player_inventory', [])
     
@@ -33,15 +33,15 @@ def trigger_trap(game_state):
         # Выбираем случайный предмет для удаления
         item_index = pseudo_random(game_state.get('steps_taken', 0), len(inventory))
         lost_item = inventory.pop(item_index)
-        print(f"💔 Вы потеряли предмет: {lost_item}")
+        print(f"Вы потеряли предмет: {lost_item}")
     else:
         # Игрок получает урон
         damage_chance = pseudo_random(game_state.get('steps_taken', 0), 10)
         if damage_chance < 3:
-            print("💀 Ловушка нанесла смертельный урон! Игра окончена.")
+            print("Ловушка нанесла смертельный урон! Игра окончена.")
             game_state['game_over'] = True
         else:
-            print("🛡️ Вам удалось увернуться от ловушки!")
+            print("Вам удалось увернуться от ловушки!")
 
 
 def random_event(game_state):
@@ -58,25 +58,25 @@ def random_event(game_state):
     
     match event_type:
         case 0:  # Находка
-            print("✨ Вы нашли на полу блестящую монетку!")
+            print("Вы нашли на полу блестящую монетку!")
             current_room = game_state['current_room']
             room_data = ROOMS.get(current_room, {})
             if 'coin' not in room_data.get('items', []):
                 room_data.setdefault('items', []).append('coin')
         
         case 1:  # Испуг
-            print("👂 Вы слышите странный шорох из темноты...")
+            print("Вы слышите странный шорох из темноты...")
             inventory = game_state.get('player_inventory', [])
             if 'sword' in inventory:
-                print("⚔️ Вы достаете меч, и существо отступает!")
+                print("Вы достаете меч, и существо отступает!")
             else:
-                print("😨 Вам становится не по себе...")
+                print("Вам становится не по себе...")
         
         case 2:  # Ловушка
             current_room = game_state['current_room']
             inventory = game_state.get('player_inventory', [])
             if current_room == 'trap_room' and 'torch' not in inventory:
-                print("⚠️ Вы чувствуете опасность...")
+                print("Вы чувствуете опасность...")
                 trigger_trap(game_state)
 
 
@@ -261,7 +261,7 @@ def solve_puzzle(game_state):
     
     # Выводим вопрос загадки
     question, correct_answer = puzzle
-    print(f"💡 Загадка: {question}")
+    print(f"Загадка: {question}")
     
     # Получаем ответ от пользователя
     user_answer = input("Ваш ответ: ").strip().lower()
@@ -273,7 +273,7 @@ def solve_puzzle(game_state):
     
     # Сравниваем ответ с правильным
     if user_answer in correct_answers:
-        print("✅ Правильно! Загадка решена!")
+        print("Правильно! Загадка решена!")
         
         # Помечаем загадку как решенную
         room_data['puzzle_solved'] = True
@@ -284,26 +284,12 @@ def solve_puzzle(game_state):
             if 'player_inventory' not in game_state:
                 game_state['player_inventory'] = []
             game_state['player_inventory'].append(reward)
-            print(f"🎁 Вы получили награду: {reward}")
+            print(f"Вы получили награду: {reward}")
         
         return True
     else:
-        print("❌ Неверно. Попробуйте снова.")
+        print("Неверно. Попробуйте снова.")
         # В trap_room неверный ответ активирует ловушку
         if current_room == 'trap_room':
             trigger_trap(game_state)
         return False
-
-
-# Дополнительные константы для красивой справки
-COMMANDS_HELP = {
-    "north/south/east/west": "перейти в направлении",
-    "go <direction>": "перейти в направлении",
-    "look": "осмотреть текущую комнату",
-    "take <item>": "поднять предмет",
-    "use <item>": "использовать предмет",
-    "inventory": "показать инвентарь",
-    "solve": "решить загадку",
-    "quit": "выйти из игры",
-    "help": "показать это сообщение"
-}
